@@ -5,8 +5,8 @@ from datetime import datetime
 class Cliente:
 
     def __init__(self,endereco,):
-        self._endereco = endereco
-        self._contas = []
+        self.endereco = endereco
+        self.contas = []
 
     def realizar_transacao(self,conta,transacao):
         transacao.registrar(conta)
@@ -17,13 +17,13 @@ class Cliente:
 class PessoaFisica(Cliente):
 
     def __init__(self, nome, data_nascimento, cpf, endereco):
-        self._nome = nome
-        self._cpf = cpf
-        self._data_nascimento = data_nascimento
         super().__init__(endereco)
+        self.nome = nome
+        self.cpf = cpf
+        self.data_nascimento = data_nascimento     
 
 class Conta:
-    
+
     def __init__(self,numero,cliente):
         self._saldo = 0
         self._numero = numero
@@ -34,26 +34,26 @@ class Conta:
     @classmethod
     def nova_conta(cls,cliente,numero_conta):
         return cls(cliente,numero_conta)
-    
+
     @property
     def saldo(self):
-        return self.saldo
+        return self._saldo
 
     @property
     def numero(self):
-        return self.numero
-    
+        return self._numero
+
     @property
     def agencia(self):
-        return self.agencia
-    
+        return self._agencia
+
     @property
     def cliente(self):
-        return self.cliente
-    
+        return self._cliente
+
     @property
     def historico(self):
-        return self.historico
+        return self._historico
 
     def sacar(self,saque):
         saldo = self._saldo
@@ -81,9 +81,9 @@ class Conta:
 class ContaCorrente(Conta):
 
     def __init__(self, numero, cliente,limite=500,limite_saque=3):
+        super().__init__(numero, cliente)
         self._limite = limite
         self._limite_saque = limite_saque
-        super().__init__(numero, cliente)
 
     def sacar(self,valor):
         numeros_saques = len([transacao for transacao in self.historico.transacoes if transacao['tipo'=='Saque']])
@@ -94,28 +94,27 @@ class ContaCorrente(Conta):
             print("Erro ao sacar. Foi excedido o limte de saques diário...")
         else:
             return super().sacar(valor)
-        
+
         return False
-    
+
     def __str__(self):
         return f"Agência: {self.agencia}\nC/C: {self.numero}\nTitular: {self.cliente.nome}"
-    
+
 class Historico:
 
     def __init__(self):
-        self._transacao = []
+        self._transacoes = []
 
     @property
-    def transacao(self):
-        return self._transacao
-    
+    def transacoes(self):
+        return self._transacoes
+
     def adicionar_transacao(self,transacao):
-        self._transacao.append(
+        self._transacoes.append(
             {
                 'tipo':transacao.__class__.__name__,
                 'valor': transacao.valor,
-                'data': datetime.now().strftime
-                ("%d-%m-%Y %H:%M:%s")
+                'data': datetime.now().strftime("%d-%m-%Y %H:%M:%s")
 
             }
         )
@@ -147,7 +146,7 @@ class Deposito(Transacao):
             conta.historico.adicionar_transacao(self)
 
 class Saque(Transacao):
-    
+
     def __init__(self,valor):
         self._valor = valor
 
@@ -263,7 +262,7 @@ def criar_conta(numero_conta, clientes, contas):
         print("Cliente não encontrado, fluxo de criação de conta encerrado!")
         return
 
-    conta = ContaCorrente.nova_conta(cliente=cliente, numero=numero_conta)
+    conta = ContaCorrente.nova_conta(cliente=cliente, numero_conta=numero_conta)
     contas.append(conta)
     cliente.contas.append(conta)
 
