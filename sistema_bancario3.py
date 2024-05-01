@@ -24,7 +24,7 @@ class PessoaFisica(Cliente):
 
 class Conta:
 
-    def __init__(self,numero,cliente):
+    def __init__(self,cliente,numero):
         self._saldo = 0
         self._numero = numero
         self._agencia = "0001"
